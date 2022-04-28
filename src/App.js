@@ -1,23 +1,40 @@
-import logo from './logo.svg';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+
 import './App.css';
 
+
 function App() {
+  const [data, setData] = useState([]);
+  
+  useEffect(() => {
+    async function fetchData() {
+      const results = await axios.get('https://api.giphy.com/v1/gifs/trending', {
+        params: {
+          api_key: "J5eB9q7KY3qvSj8FlLHSdOVYvT16z03q"
+        }
+      });
+
+      setData(results.data.data);
+    }
+    fetchData();
+  }, []);
+
+  console.log(data);
+
+  const renderGifs = () => {
+    return data.map(el => {
+      return (
+        <div key={el.id} className='gif'>
+          <img src={el.images.fixed_height.url}/>
+        </div>
+      )
+    })
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      {renderGifs()}
     </div>
   );
 }
