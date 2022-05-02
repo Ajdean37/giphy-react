@@ -1,16 +1,13 @@
 import React from "react";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import Loading from "./Loading";
-
 
 const Giphy = () => {
   const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false)
-  
+  const [search, setSearch] = useState("");
+
   useEffect(() => {
     async function fetchData() {
-        setIsLoading(true)
       const results = await axios.get('https://api.giphy.com/v1/gifs/trending', {
         params: {
           api_key: "J5eB9q7KY3qvSj8FlLHSdOVYvT16z03q"
@@ -19,19 +16,39 @@ const Giphy = () => {
 
       setData(results.data.data);
 
-      setIsLoading(false)
     }
     fetchData();
   }, []);
 
   console.log(data);
 
-  const renderGifs = () => {
-      if(isLoading) {
-        return (
-          <Loading />
-        );
+  const handleSearchChange = (event) => {
+    setSearch(event.target.value)
+  }
+
+  const handleSubmit = async (event) => {
+      event.preventDefault();
+    const results = await axios.get('https://api.giphy.com/v1/gifs/trending', {
+      params: {
+        api_key: "J5eB9q7KY3qvSj8FlLHSdOVYvT16z03q",
+        q: search
       }
+    }); 
+
+    setData(results.data.data);
+    
+  }
+
+  const renderGifs = () => {
+    <form>
+      <input 
+        value={search} 
+        onChange={handleSearchChange} 
+        type="text" 
+        placeholder="search">
+      </input>
+      <button onClick={handleSubmit} type="submit">Go</button>
+    </form>
     return data.map(el => {
       return (
         <div key={el.id} className='gif'>
